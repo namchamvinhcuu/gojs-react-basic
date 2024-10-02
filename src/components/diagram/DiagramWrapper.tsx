@@ -1,13 +1,12 @@
-/*
- *  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
- */
-
 import * as go from "gojs";
+
 import { ReactDiagram } from "gojs-react";
+
 import { useState, useCallback, useEffect } from "react";
 
-import { GuidedDraggingTool } from "../../GuidedDraggingTool";
-import { DiagramData } from "../../App";
+import { GuidedDraggingTool } from "@/GuidedDraggingTool";
+
+import { DiagramData } from "@/App";
 
 import "./Diagram.css";
 
@@ -19,6 +18,16 @@ interface DiagramProps {
 
 export function DiagramWrapper(props: DiagramProps) {
   const [diagram, setDiagram] = useState<go.Diagram | null>(null);
+  const [theme, setTheme] = useState("dark");
+
+  const updateLinkColor = (link: any) => {
+    let color = theme === "dark" ? "white" : "black";
+
+    // if (link.fromNode && link.fromNode.data.isNew) color = "green";
+    // if (color === "black" && link.toNode && link.toNode.data.isNew)
+    //   color = "green";
+    link.path.stroke = color;
+  };
 
   const diagramRef = useCallback(
     (ref: ReactDiagram | null) => {
@@ -32,14 +41,51 @@ export function DiagramWrapper(props: DiagramProps) {
     [diagram, props.onDiagramEvent]
   );
 
-  // Cleanup
+  // Cleanup and listener handling for the diagram's selection event
   useEffect(() => {
+    if (diagram instanceof go.Diagram) {
+      diagram.addDiagramListener("ChangedSelection", props.onDiagramEvent);
+    }
+
     return () => {
       if (diagram instanceof go.Diagram) {
         diagram.removeDiagramListener("ChangedSelection", props.onDiagramEvent);
       }
     };
   }, [diagram, props.onDiagramEvent]);
+
+  // Update links' colors when theme changes
+  useEffect(() => {
+    console.log("DiagramWrapper useEffect for theme changes");
+    if (diagram instanceof go.Diagram) {
+      diagram.links.each((link) => updateLinkColor(link));
+    }
+  }, [diagram, theme]); // Rerun when theme changes
+
+  // Watch for changes to the data-theme attribute
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-theme"
+        ) {
+          const newTheme = document.body.getAttribute("data-theme");
+          setTheme(newTheme || "light"); // Update the theme state
+        }
+      });
+    });
+
+    // Start observing the body for attribute changes
+    observer.observe(document.body, {
+      attributes: true,
+    });
+
+    // Cleanup the observer on component unmount
+    return () => {
+      observer.disconnect();
+    };
+  }, []); // Run only once when the component mounts
 
   /**
    * Diagram initialization method, which is passed to the ReactDiagram component.
@@ -115,10 +161,19 @@ export function DiagramWrapper(props: DiagramProps) {
     // relinking depends on modelData
     diagram.linkTemplate = $(
       go.Link,
-      new go.Binding("relinkableFrom", "canRelink").ofModel(),
+      {
+        fromPortChanged: updateLinkColor,
+        toPortChanged: updateLinkColor,
+      },
+      new go.Binding("relinkableFrom", "canRelink", function () {
+        // return theme === "dark" ? "white" : "black";
+      }).ofModel(),
       new go.Binding("relinkableTo", "canRelink").ofModel(),
       $(go.Shape),
-      $(go.Shape, { toArrow: "Standard" })
+      $(go.Shape, {
+        toArrow: "Standard",
+        stroke: theme === "dark" ? "white" : "black",
+      })
     );
 
     return diagram;

@@ -1,7 +1,7 @@
 .inspector {
   font: 500 1rem Roboto, helvetica, sans-serif;
-  /* color: #212121; */
-  color: #ffffff;
+  /* color: #212121;
+  color: #ffffff; */
   cursor: default;
   margin-top: 2px;
 }
@@ -15,12 +15,12 @@ th {
   font: 300 1rem Roboto, helvetica, sans-serif;
   border: 0;
   outline: none;
-  border-bottom: 1px solid #212121; /* Grey 900 */
+  /* border-bottom: 1px solid #212121; */
   padding: 2px;
 }
 
 .inspector input:disabled {
-  background-color: #eeeeee; /* Grey 400 */
-  color: #616161; /* Grey 700 */
-  border-bottom: 1px solid #bdbdbd; /* Grey 900 */
+  background-color: #eeeeee;
+  color: #616161;
+  border-bottom: 1px solid #bdbdbd;
 }

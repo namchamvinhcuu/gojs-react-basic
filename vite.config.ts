@@ -1,12 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import * as path from "path";
 
-// // https://vitejs.dev/config/
-// export default defineConfig({
-//   plugins: [react()],
-//   server: { open: true, },
-// });
-
+// https://vitejs.dev/config/
 export default defineConfig({
   base: "./", // This will make paths relative
   build: {
@@ -19,6 +15,14 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 1000, // Increase the limit if needed
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      "@components": path.resolve(__dirname, "src/components"),
+      "@hooks": path.resolve(__dirname, "src/hooks"),
+      "@styles": path.resolve(__dirname, "src/styles"),
+    },
   },
 });

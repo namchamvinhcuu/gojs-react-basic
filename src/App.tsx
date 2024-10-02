@@ -1,24 +1,13 @@
-/*
- *  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
- */
-
 import * as go from "gojs";
 
 import { useEffect, useState, useCallback } from "react";
 import { useImmer } from "use-immer";
 
-import { DiagramWrapper } from "./components/diagram/DiagramWrapper";
-import { SelectionInspector } from "./components/inspector/SelectionInspector";
+import { DiagramWrapper } from "@components/diagram/DiagramWrapper";
+import { SelectionInspector } from "@components/inspector/SelectionInspector";
+import { Switch } from "@components/Switch";
+import { Title } from "@components/Title";
 
-// import { ThemeProvider } from "./components/theme/theme-provider";
-
-import "./App.css";
-
-/**
- * Use a linkDataArray since we'll be using a GraphLinksModel,
- * and modelData for demonstration purposes. Note, though, that
- * both are optional props in ReactDiagram.
- */
 export type DiagramData = {
   nodeDataArray: Array<go.ObjectData>;
   linkDataArray: Array<go.ObjectData>;
@@ -28,7 +17,6 @@ export type DiagramData = {
 };
 
 const App = () => {
-  // Maps to store key -> arr index for quick lookups
   const [mapNodeKeyIdx, setMapNodeKeyIdx] = useState<Map<go.Key, number>>(
     new Map<go.Key, number>()
   );
@@ -46,7 +34,7 @@ const App = () => {
     linkDataArray: [
       { key: -1, from: 0, to: 1 },
       { key: -2, from: 0, to: 2 },
-      { key: -3, from: 1, to: 1 },
+      // { key: -3, from: 1, to: 1 },
       { key: -4, from: 2, to: 3 },
       { key: -5, from: 3, to: 0 },
     ],
@@ -285,11 +273,12 @@ const App = () => {
   }, [diagram.selectedData, mapLinkKeyIdx, mapNodeKeyIdx, updateDiagram]);
 
   return (
-    // <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <div className="container-main">
+      <Title />
+      <Switch />
+      {/* <LayoutCards /> */}
+      {/* <MyProfile/> */}
 
-    // </ThemeProvider>
-
-    <>
       <DiagramWrapper
         diagramData={diagram}
         onDiagramEvent={handleDiagramEvent}
@@ -305,8 +294,7 @@ const App = () => {
         />
       </label>
       {inspector}
-    </>
+    </div>
   );
 };
-
 export default App;
